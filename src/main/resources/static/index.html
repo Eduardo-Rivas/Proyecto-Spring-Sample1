@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Página en Java</title>
+		<meta charset="utf-8"> 
+		
+		<!--Css-->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  	
+  		<style type="text/css">
+  			html 
+  			{
+				margin-top: 2%;
+				margin-left: 5%;
+				margin-right: 5%;
+			}
+			
+			#formCadastroUser
+			{
+				border-width: 0.2px;
+				border-style: solid;
+				border-color: rgb(192, 191, 188);
+				padding: 10px;
+				background-color:  rgb(246, 245, 244);
+				width: 85%;
+			}
+
+			.form-label
+			{
+				margin-bottom: 0px;
+			}
+			
+			#id
+			{
+				width: 60px; max-width: 60px;min-width: 60px;
+				background-color: rgb(192, 191, 188);
+				margin-bottom: 10px;
+			}
+
+			#name
+			{
+				width: 600px; max-width: 600px;min-width: 600px;
+				margin-bottom: 10px;
+			}
+
+			#edad
+			{
+				width: 75px; max-width: 75px;min-width: 75px;
+				margin-bottom: 10px;
+			}
+			
+			
+			#opcBotones
+			{
+				margin-top: 8px;
+			}
+  		</style>
+  		
+  	</head>
+
+		
+	<body>
+		<form id="formCadastroUser" name="form1">
+			<div class="cp-0">
+				<h2>Programa CRUD de Prueba CON Java Usando Sprint Boot</h2>
+			</div>
+			
+			<div  id="in-01" class="cp-1">
+			  <label for="id" class="form-label">Id</label>
+			  <input type="text" class="form-control" id="id" readonly>
+			</div>
+
+			<div class="pc-2">
+			  <label for="name" class="form-label">Nombre Completo</label>
+			  <input type="text" class="form-control" id="name" name="name" placeholder="Informe el Name Completo" required>
+			</div>
+
+			<div class="cp-3">
+			  <label for="edad" class="form-label">Edad</label>
+			  <input type="number" class="form-control" id="edad" name="edad">
+			</div>
+		</form>
+		
+		<div id="opcBotones">
+			<button type="button" class="btn btn-primary" onclick="salvarUsuario()">Salvar</button>
+			<button type="button" class="btn btn-primary" onclick="document.getElementById('formCadastroUser').reset()">Nuevo</button>
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPesquisarUser">Pesquisar</button>
+			<button type="button" class="btn btn-primary" onclick="eliminarDeTela()">Deletar</button>
+		</div>
+
+		<!--Pantalla Modal-->
+		<div class="modal fade" id="modalPesquisarUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		    
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Pesquisa de Usuarios</h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      
+
+		      <div class="modal-body">
+		        <form>
+		          <div class="mb-3">
+		            <label for="nombreaBuscar" class="col-form-label">Informe o Nome:</label>
+		            <input type="text" class="form-control" id="nombreaBuscar">
+		          </div>
+				  <button type="button" class="btn btn-success" onclick="buscarUser()">Buscar</button>
+		        </form>
+		        
+		        <!--Tabla Interna de Pesquisa-->
+		        <div style="height: 300px; overflow: scroll;">
+					<table class="table" id="tablaResultados">
+				  		<thead>
+				    		<tr>
+				      			<th scope="col">Id</th>
+				      			<th scope="col">Nombre Completo</th>
+				      			<th scope="col">Editar</th>
+				      			<th scope="col">Detete</th>
+				    		</tr>
+				  		</thead>
+				  
+				  		<tbody>
+
+				  		</tbody>
+				  
+					</table>
+		        </div>
+		        
+		      </div>
+		      
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+
+
+		<!--JQuery-->
+		<script
+			  src="https://code.jquery.com/jquery-3.6.0.min.js"
+			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+			  crossorigin="anonymous">
+		</script>
+		
+		<!--Java Script-->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>	
+	
+		<!--Todas las Funciones JavaScript utilizadas en el Programa-->
+		<script type="text/javascript">
+			//--Busca Usuarios por Nombres--//
+			function buscarUser()
+			{
+				var name = $("#nombreaBuscar").val();
+				
+				if(name != null && name.trim() != "")
+				{
+					$.ajax({
+						method: "GET",
+						url: "buscarPorNombre",
+						data: "name="+name,
+						success: function(response)
+						{
+							$("#tablaResultados > tbody > tr").remove();
+							
+							for(var i = 0; i < response.length; i++)
+							{
+								
+								$("#tablaResultados >  tbody").append("<tr id='"+response[i].id+"'><td>"+response[i].id+"</td>"+
+																		  "<td>"+response[i].name+"</td>"+
+																		  "<td>"+'<button type="button" onclick="colocarEnEditar('+response[i].id+')" class="btn btn-primary">Ver</button>'+"</td>"+
+																		  "<td>"+'<button type="button" onclick="eliminar('+response[i].id+')" class="btn btn-danger">Delete</button>'+"</td>"+
+																	  "</tr>");
+							}
+						}
+					}).fail(function(xhr, status, errorThrown){
+						alert("Error al Buscar los Datos : "+xhr.responseText);
+					});
+
+				}	
+				else
+				{
+					alert("El Nombre Es Null");	
+				}
+				
+			}	
+		
+			//--Salvar Usuarios--//
+			function salvarUsuario()
+			{
+				var id = $("#id").val();
+				var name = $("#name").val();
+				var edad = $("#edad").val();
+				 
+				if(name == null || name.trim() =="")			
+				{
+					alert("Informe O Nome Completo");
+					$("#name").focus();
+					return;
+				}
+				if(edad == null || edad.trim() =="")			
+				{
+					alert("Informe A Edad");
+					$("#edad").focus();
+					return;
+				}
+				 
+				$.ajax({
+					method: "POST",
+					url: "salvar",
+					data: JSON.stringify({id: id, name: name, edad: edad}),
+					contentType: "application/json; charset=utf-8",
+					success: 
+						function(response) 
+						{
+							//--Colocar Id en Pantalla--//
+							$("#id").val(response.id);
+							
+							alert("Salvó los Datos Con Susseso...!");
+							document.getElementById('formCadastroUser').reset()
+						}
+				}).fail(function(xhr, status, errorThrown){
+					alert("Error al Salvar los Datos : "+xhr.responseText);
+				});
+				
+			}
+			
+			//--Coloca Usuarios de la Busqueda en Edicón--//
+			function colocarEnEditar(id)
+			{
+					
+				$.ajax({
+					method: "GET",
+					url: "buscaruserid",
+					data: "userid="+id,
+					success: function(response)
+					{
+						$("#id").val(response.id);
+						$("#name").val(response.name);
+						$("#edad").val(response.edad);
+						
+						$("#modalPesquisarUser").modal("hide");
+					}
+					}).fail(function(xhr, status, errorThrown){
+						alert("Error al Buscar Usuario por Id : "+xhr.responseText);
+				});
+				
+				
+			}
+			
+			//--Eliminar por por Id--//
+			function eliminar(id)
+			{
+				if(confirm("Desea Realmente Eliminar el Registro...!"))
+				{
+					$.ajax({
+						method: "DELETE",
+						url: "delete",
+						data: "userid="+id,
+						success: function(response)
+						{
+							//--Elimina la Linea de la Tabla--//
+							$('#'+id).remove();
+						
+							alert(response);
+						}
+						}).fail(function(xhr, status, errorThrown){
+							alert("Error al Deletar Usuario por Id : "+xhr.responseText);
+					});
+				}	
+
+			}
+			
+			function eliminarDeTela()
+			{	
+				var id = $("#id").val();
+				if(id != null && id.trim() !="")
+				{
+					eliminar(id);
+					document.getElementById('formCadastroUser').reset()
+				}	
+				
+			}
+			
+		</script>
+		
+	</body>
+</html>
